@@ -1,8 +1,13 @@
-import React from "react";
+import React from 'react';
 
-export default class TodoInput extends React.Component {
+export type TodoListProps = {
+  todos: string[];
+}
 
-  _getTodoItem(item, index) {
+export type TodoListState = {}
+
+export default class TodoList extends React.Component<TodoListProps, TodoListState> {
+  _getTodoItem(item: string, index: number) {
     return (<li key={index}>{item}</li>);
   }
 

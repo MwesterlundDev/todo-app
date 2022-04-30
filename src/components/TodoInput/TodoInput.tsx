@@ -1,16 +1,24 @@
-import React from "react";
-import {Button} from "react-bootstrap";
+import React from 'react';
+import {Button} from 'react-bootstrap';
 
-export default class TodoInput extends React.Component {
-  constructor(props) {
+export type TodoInputProps = {
+  onSaveTodo: (todo: string) => any;
+}
+
+export type TodoInputState = {
+  todoValue: string;
+}
+
+export default class TodoInput extends React.Component<TodoInputProps, TodoInputState> {
+  constructor(props: TodoInputProps) {
     super(props);
 
     this.state = {
-      todoValue: ''
+      todoValue: '',
     };
   }
 
-  _textChange(e) {
+  _textChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({todoValue: e.target.value});
   }
 
@@ -27,15 +35,15 @@ export default class TodoInput extends React.Component {
     return (
       <div className="todo-input">
         <input value={this.state.todoValue} type="text" onChange={(e) => this._textChange(e)} />
-        <Button 
+        <Button
           type="button"
           variant="outline-primary"
-          onClick={(e) => this._saveTodo()}
+          onClick={() => this._saveTodo()}
           disabled={!this._isEnabled()}
         >
           Save
         </Button>
       </div>
-    )
+    );
   }
 }
