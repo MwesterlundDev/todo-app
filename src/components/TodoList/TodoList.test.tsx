@@ -50,7 +50,7 @@ describe(TodoList.name, () => {
       todos = [todo1, todo2, todo3];
       (subject as any).props = {todos};
 
-      jest.spyOn(subject, '_getTodoItem').mockImplementation((todo, index) => todo);
+      jest.spyOn(subject, '_getTodoItem').mockImplementation((todo) => todo);
     });
 
     it('gets todo items', () => {
