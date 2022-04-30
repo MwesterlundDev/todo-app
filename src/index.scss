@@ -1,0 +1,50 @@
+// Bootstrap Classes
+@import "~bootstrap/scss/bootstrap";
+
+// colors
+@import "./sass/colors";
+
+@import "./App";
+@import "./components/TodoInput/TodoInput";
+@import "./components/TodoList/TodoList";
+
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Fira Sans",
+    "Droid Sans",
+    "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: $color-primary;
+  color: $color-secondary;
+}
+
+code {
+  font-family:
+    source-code-pro,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Courier New",
+    monospace;
+}
+
+.required::after {
+  color: map-get($theme-colors, "danger");
+  content: "*";
+}
+
+body > #root {
+  height: 100vh;
+  width: 100vw;
+}

@@ -1,0 +1,10 @@
+.todo-list {
+  max-width: 300px;
+  display: flex;
+  flex-flow: column;
+  margin: auto;
+
+  ul {
+    list-style-type: none;
+  }
+}
