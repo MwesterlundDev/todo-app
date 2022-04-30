@@ -327,10 +327,127 @@ describe(myClass.function1.name, () => {
 
 # Features 
 
-## Unit tests
+## Unit Test Example 
+This is an example of using Jest to unit test a single React class component writen in TypeScript. This test is run using two files `TodoInput.tsx` and `TodoInput.test.tsx`. A full example of working code can be found at https://github.com/MwesterlundDev/todo-app
 
+### `TodoInput.tsx`
+This is the example class that will be tested.
+```JavaScript
+export default class TodoInput extends React.Component<TodoInputProps, TodoInputState> {
+  constructor(props: TodoInputProps) {
+    super(props);
 
+    this.state = {
+      todoValue: '',
+    };
+  }
 
+  _textChange(e: React.ChangeEvent<HTMLInputElement>): void {
+    this.setState({todoValue: e.target.value});
+  }
+
+  _isEnabled(): boolean {
+    return this.state.todoValue !== '';
+  }
+
+  _saveTodo(): void {
+    if (this._isEnabled()) {
+      this.props.onSaveTodo(this.state.todoValue);
+      this.setState({todoValue: ''});
+    }
+  }
+
+  render() {
+    return (
+      <div className="todo-input">
+        <input value={this.state.todoValue} type="text" onChange={(e) => this._textChange(e)} />
+        <Button
+          type="button"
+          variant="outline-primary"
+          onClick={() => this._saveTodo()}
+          disabled={!this._isEnabled()}
+        >
+          Save
+        </Button>
+      </div>
+    );
+  }
+}
+```
+
+To begin setting up the tests for this class, the necessary modules must be imported at the top of the file
+```JavaScript
+import React from 'react';
+import TodoInput, {TodoInputProps} from './TodoInput';
+```
+
+After the modules are imported, the testing suite is set up.  Typically when testing a full class, the object prototype is extracted out using the object destructuring operation. This allows for easy naming of testing suites using the `.name` property on the function. Also, the `subject` instance object is created which allows jest to spy on an instance of the class that is being tested.  The `subject` is initialized in the `beforeEach()` function to ensure that a fresh object is used for each test.  
+
+```JavaScript
+describe(TodoInput.name, () => {
+  const {prototype} = TodoInput;
+  let subject: TodoInput;
+
+  beforeEach(() => {
+    subject = new TodoInput({} as TodoInputProps);
+  });
+```
+
+Each function then gets its own testing suite in a describe block. Each function also sets up its own tests using a `beforeEach()` unique to each function test suite. This allows the tests to be designed specifically for that function. This is also where most parameters that would be passed into the function would be generated. 
+
+Using the `_saveTodo()` function as an example, this is a typical setup for function tests. Here the state of the subject is set up to have a value. Three functions are also mocked out in three different ways.  
+* The `setState` function only requires a mocked implemenation because it is a `void` function. This means the only thing that can be tested is the function has been called, and what it was called with.
+* The `onSaveTodo` function on the `prop` passed in to the class has to be mocked out by reassigning the function with a jest mock function. The `jest.fn()` object acts exactly the same as the `jest.spyOn().mockImplementation()`.
+* The `_isEnabled()` function is mocked with a return value because this function returns a boolean that is necessary to prevent an empty value from being added to the list.
+
+```JavaScript
+  describe(prototype._saveTodo.name, () => {
+    beforeEach(() => {
+      (subject as any).state.todoValue = 'Some Value';
+
+      jest.spyOn(subject, 'setState').mockImplementation();
+      (subject as any).props.onSaveTodo = jest.fn();
+      jest.spyOn(subject, '_isEnabled').mockReturnValue(true);
+    });
+```
+
+Looking at each line in the `_saveTodo` function, there are four tests that need to be created. A test for calling `onSaveTodo` and `setState` each for when `_isEnabled` returns true, and a test for each of these calls for when `_isEnabled` returns false.
+```JavaScript
+ _saveTodo(): void {
+    if (this._isEnabled()) {
+      this.props.onSaveTodo(this.state.todoValue);
+      this.setState({todoValue: ''});
+    }
+  }
+```
+
+The test for calling `onSaveTodo` needs to test it has been called with the current value set in the class' state
+```JavaScript
+    it('calls save todo', () => {
+      subject._saveTodo();
+      expect(subject.props.onSaveTodo).toHaveBeenCalledWith('Some Value');
+    });
+```
+
+The test for calling `setState` needs to test that the class' has been reset to empty. This also shows the expect statement is able to recognize deep copies of JavaScript objects.
+```JavaScript
+    it('resets the state to empty', () => {
+      subject._saveTodo();
+      expect(subject.setState).toHaveBeenCalledWith({todoValue: ''});
+    });
+```
+
+Each of these function calls also must be tested when `_isEnabled` returns false. This requires the `_isEnabled` function to change is mock return value. These assertions are also able to be combined to a single tests, because they are testing the absence of a call.
+```JavaScript
+    it('does not call the functions when there is no input value', () => {
+      jest.spyOn(subject, '_isEnabled').mockReturnValue(false);
+      subject._saveTodo();
+      expect(subject.setState).not.toHaveBeenCalled();
+      expect(subject.props.onSaveTodo).not.toHaveBeenCalled();
+    });
+```
+
+This same process is applied to each function in a class.
 
 ## Jest CLI   
 The Jest CLI (Command Line Interface) is where the testing output is displayed. Once the CLI is up and running, it automatically watches the test files set up in the project directory and runs again whenever a file is saved. While the CLI is waiting, commands can be added to run certain tests: 
