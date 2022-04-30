@@ -18,17 +18,19 @@ export default class TodoInput extends React.Component<TodoInputProps, TodoInput
     };
   }
 
-  _textChange(e: React.ChangeEvent<HTMLInputElement>) {
+  _textChange(e: React.ChangeEvent<HTMLInputElement>): void {
     this.setState({todoValue: e.target.value});
   }
 
-  _isEnabled() {
+  _isEnabled(): boolean {
     return this.state.todoValue !== '';
   }
 
-  _saveTodo() {
-    this.props.onSaveTodo(this.state.todoValue);
-    this.setState({todoValue: ''});
+  _saveTodo(): void {
+    if (this._isEnabled()) {
+      this.props.onSaveTodo(this.state.todoValue);
+      this.setState({todoValue: ''});
+    }
   }
 
   render() {

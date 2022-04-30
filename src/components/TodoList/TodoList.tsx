@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ReactNode} from 'react';
 
 export type TodoListProps = {
   todos: string[];
@@ -7,11 +7,15 @@ export type TodoListProps = {
 export type TodoListState = {}
 
 export default class TodoList extends React.Component<TodoListProps, TodoListState> {
-  _getTodoItem(item: string, index: number) {
-    return (<li key={index}>{item}</li>);
+  _getTodoItem(todo: string, index: number): ReactNode | undefined {
+    let listItem;
+    if (todo && (index || index === 0)) {
+      listItem = (<li key={index}>{todo}</li>);
+    }
+    return listItem;
   }
 
-  _getTodoItems() {
+  _getTodoItems(): ReactNode[] {
     return this.props.todos.map((todo, index) => this._getTodoItem(todo, index));
   }
 
